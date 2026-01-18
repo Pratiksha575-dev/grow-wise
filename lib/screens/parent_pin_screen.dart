@@ -24,11 +24,11 @@ class _ParentPinScreenState extends State<ParentPinScreen> {
       setState(() {
         error = 'Parent data missing. Please login again.';
       });
-      debugPrint('❌ ParentPinScreen: parent is null');
+      debugPrint(' ParentPinScreen: parent is null');
       return;
     }
 
-    debugPrint('🔐 PIN CHECK ATTEMPT');
+    debugPrint(' PIN CHECK ATTEMPT');
     debugPrint('Parent ID: ${parent.id}');
     debugPrint('Entered PIN: ${_pinController.text}');
 
@@ -36,12 +36,12 @@ class _ParentPinScreenState extends State<ParentPinScreen> {
       setState(() {
         error = 'Incorrect PIN';
       });
-      debugPrint('❌ PIN mismatch');
+      debugPrint(' PIN mismatch');
       return;
     }
 
-    // ✅ PIN VERIFIED
-    debugPrint('✅ PIN verified successfully');
+    //  PIN VERIFIED
+    debugPrint('PIN verified successfully');
 
     appState.chooseRole(UserRole.parent);
 

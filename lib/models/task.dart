@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'task.g.dart';
 
+
 @HiveType(typeId: 3)
 class Task extends HiveObject {
   @HiveField(0)
@@ -17,29 +18,53 @@ class Task extends HiveObject {
   String description;
 
   @HiveField(4)
-  bool isCompleted;
+  DateTime taskDate;
 
   @HiveField(5)
-  bool isLiked;
+  bool isCompleted;
 
   @HiveField(6)
-  bool isSkipped;
+  bool isLiked;
 
   @HiveField(7)
-  bool generatedByAI;
+  bool isSkipped;
 
   @HiveField(8)
-  DateTime taskDate;
+  TaskDomain domain;
+
+  @HiveField(9)
+  bool generatedByAI;
 
   Task({
     required this.id,
     required this.childId,
     required this.title,
     required this.description,
+    required this.taskDate,
     this.isCompleted = false,
     this.isLiked = false,
     this.isSkipped = false,
-    this.generatedByAI = false,
-    required this.taskDate,
+    required this.domain,
+    this.generatedByAI = true,
   });
+}
+
+
+
+@HiveType(typeId: 4) // ⚠️ UNIQUE & NEW
+enum TaskDomain {
+  @HiveField(0)
+  emotional,
+
+  @HiveField(1)
+  social,
+
+  @HiveField(2)
+  physical,
+
+  @HiveField(3)
+  cognitive,
+
+  @HiveField(4)
+  ethical,
 }

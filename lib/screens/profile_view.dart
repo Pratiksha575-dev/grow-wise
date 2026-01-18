@@ -38,10 +38,6 @@ class _ParentProfile extends StatelessWidget {
     final children = appState.childrenOfParent;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Parent Profile'),
-        centerTitle: true,
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -56,8 +52,6 @@ class _ParentProfile extends StatelessWidget {
           _SectionCard(
             title: 'Personal Info',
             children: [
-              _InfoRow('Name', parent.name),
-              _InfoRow('Email', parent.email),
               _InfoRow(
                 'Working Status',
                 parent.workingStatus ? 'Working' : 'Not Working',
@@ -125,10 +119,6 @@ class _ChildProfile extends StatelessWidget {
     final child = appState.child!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Child Profile'),
-        centerTitle: true,
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -139,17 +129,6 @@ class _ChildProfile extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-
-          _SectionCard(
-            title: 'Details',
-            children: [
-              _InfoRow('Name', child.name),
-              _InfoRow('Age', child.age.toString()),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
           _SectionCard(
             title: 'Access',
             children: const [

@@ -108,6 +108,7 @@ class DataService {
     required String childId,
     required String title,
     required String description,
+    required TaskDomain domain,
     bool generatedByAI = false,
   }) {
     final task = Task(
@@ -115,6 +116,7 @@ class DataService {
       childId: childId,
       title: title,
       description: description,
+      domain:domain,
       taskDate: DateTime.now(),
       generatedByAI: generatedByAI,
     );

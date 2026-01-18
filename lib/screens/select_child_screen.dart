@@ -49,10 +49,10 @@ class SelectChildScreen extends StatelessWidget {
             return _ChildCard(
               child: child,
               onTap: () {
-                // ✅ 1. Set selected child
+                //  1. Set selected child
                 appState.selectChild(child);
 
-                // ✅ 2. Navigate to ChildView
+                //  2. Navigate to ChildView
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(

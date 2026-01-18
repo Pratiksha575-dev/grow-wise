@@ -21,18 +21,19 @@ class TaskAdapter extends TypeAdapter<Task> {
       childId: fields[1] as String,
       title: fields[2] as String,
       description: fields[3] as String,
-      isCompleted: fields[4] as bool,
-      isLiked: fields[5] as bool,
-      isSkipped: fields[6] as bool,
-      generatedByAI: fields[7] as bool,
-      taskDate: fields[8] as DateTime,
+      taskDate: fields[4] as DateTime,
+      isCompleted: fields[5] as bool,
+      isLiked: fields[6] as bool,
+      isSkipped: fields[7] as bool,
+      domain: fields[8] as TaskDomain,
+      generatedByAI: fields[9] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Task obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -42,15 +43,17 @@ class TaskAdapter extends TypeAdapter<Task> {
       ..writeByte(3)
       ..write(obj.description)
       ..writeByte(4)
-      ..write(obj.isCompleted)
+      ..write(obj.taskDate)
       ..writeByte(5)
-      ..write(obj.isLiked)
+      ..write(obj.isCompleted)
       ..writeByte(6)
-      ..write(obj.isSkipped)
+      ..write(obj.isLiked)
       ..writeByte(7)
-      ..write(obj.generatedByAI)
+      ..write(obj.isSkipped)
       ..writeByte(8)
-      ..write(obj.taskDate);
+      ..write(obj.domain)
+      ..writeByte(9)
+      ..write(obj.generatedByAI);
   }
 
   @override
@@ -60,6 +63,60 @@ class TaskAdapter extends TypeAdapter<Task> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TaskAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class TaskDomainAdapter extends TypeAdapter<TaskDomain> {
+  @override
+  final int typeId = 4;
+
+  @override
+  TaskDomain read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return TaskDomain.emotional;
+      case 1:
+        return TaskDomain.social;
+      case 2:
+        return TaskDomain.physical;
+      case 3:
+        return TaskDomain.cognitive;
+      case 4:
+        return TaskDomain.ethical;
+      default:
+        return TaskDomain.emotional;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, TaskDomain obj) {
+    switch (obj) {
+      case TaskDomain.emotional:
+        writer.writeByte(0);
+        break;
+      case TaskDomain.social:
+        writer.writeByte(1);
+        break;
+      case TaskDomain.physical:
+        writer.writeByte(2);
+        break;
+      case TaskDomain.cognitive:
+        writer.writeByte(3);
+        break;
+      case TaskDomain.ethical:
+        writer.writeByte(4);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TaskDomainAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

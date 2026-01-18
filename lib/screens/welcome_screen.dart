@@ -95,7 +95,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       return;
     }
 
-    // ✅ UPDATE EXISTING PARENT PROFILE
+    // UPDATE EXISTING PARENT PROFILE
     parent.name = _nameController.text.trim();
     parent.workingStatus = workingStatus;
     parent.freeTimeSlots = selectedTimeSlots;

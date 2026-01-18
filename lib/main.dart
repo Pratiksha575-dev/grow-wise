@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'models/child.dart';
 import 'models/parent.dart';
@@ -32,11 +33,13 @@ void debugHive() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Hive.initFlutter();
 
   Hive.registerAdapter(ChildAdapter());
   Hive.registerAdapter(ParentAdapter());
   Hive.registerAdapter(TaskAdapter());
+  Hive.registerAdapter(TaskDomainAdapter());
 
   final hiveService = HiveService();
   await hiveService.init();

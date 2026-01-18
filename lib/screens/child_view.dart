@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../app_state.dart';
 import '../models/task.dart';
+import '../services/ai_task_engine.dart';
 import 'profile_view.dart';
-import '/widgets/task_card.dart';
+import '../widgets/task_card.dart';
 
 class ChildView extends StatefulWidget {
   const ChildView({super.key});
@@ -16,11 +17,26 @@ class ChildView extends StatefulWidget {
 class _ChildViewState extends State<ChildView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _tasksGenerated = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final appState = context.read<AppState>();
+      final child = appState.child;
+
+      if (child == null || _tasksGenerated) return;
+
+      _tasksGenerated = true;
+
+      final aiEngine = AITaskEngine(appState.dataService);
+      await aiEngine.generateDailyTasksWithAI(child);
+
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -43,8 +59,8 @@ class _ChildViewState extends State<ChildView>
     final List<Task> tasks =
     appState.dataService.getTasksForChild(child.id);
 
-    final completed =
-        tasks.where((t) => t.isCompleted).length;
+    final completed = tasks.where((t) => t.isCompleted).length;
+    final liked = tasks.where((t) => t.isLiked).length;
 
     return Scaffold(
       appBar: AppBar(
@@ -68,6 +84,7 @@ class _ChildViewState extends State<ChildView>
           _ChildProgressTab(
             total: tasks.length,
             completed: completed,
+            liked: liked,
           ),
           const ProfileView(),
         ],
@@ -120,16 +137,18 @@ class _ChildTasksTab extends StatelessWidget {
 class _ChildProgressTab extends StatelessWidget {
   final int total;
   final int completed;
+  final int liked;
 
   const _ChildProgressTab({
     required this.total,
     required this.completed,
+    required this.liked,
   });
 
   @override
   Widget build(BuildContext context) {
-    final percent =
-    total == 0 ? 0 : (completed / total * 100).round();
+    final double completionPercent =
+    total == 0 ? 0.0 : (completed / total);
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -137,51 +156,83 @@ class _ChildProgressTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Your Progress 📊',
+            'Your Progress 🌟',
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
 
-          Card(
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    '$completed of $total tasks completed',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 12),
-                  LinearProgressIndicator(
-                    value: total == 0 ? 0 : completed / total,
-                    minHeight: 10,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '$percent%',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          _ProgressCard(
+            title: 'Tasks Completed',
+            value: '$completed / $total',
+            progress: completionPercent,
+            color: Colors.green,
+          ),
+
+          const SizedBox(height: 16),
+
+          _ProgressCard(
+            title: 'Tasks You Liked ❤️',
+            value: liked.toString(),
+            progress: total == 0 ? 0.0 : liked / total,
+            color: Colors.pink,
           ),
 
           const SizedBox(height: 24),
 
           const Text(
-            'Keep going! 🌟',
-            style: TextStyle(fontSize: 16),
+            'Keep going!',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           const Text(
-            'Completing tasks daily helps build habits, '
-                'confidence, and emotional strength.',
+            'Every small task you complete helps you grow smarter, '
+                'stronger, and more confident 🌱',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ProgressCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final double progress;
+  final Color color;
+
+  const _ProgressCard({
+    required this.title,
+    required this.value,
+    required this.progress,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style:
+                const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(value),
+            const SizedBox(height: 12),
+            LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              color: color,
+              backgroundColor: color.withOpacity(0.2),
+            ),
+          ],
+        ),
       ),
     );
   }
